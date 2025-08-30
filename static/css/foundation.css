@@ -3807,7 +3807,7 @@ select:not([multiple]) {
   border-width: 6px;
   content: "";
   border-bottom-width: 0;
-  border-color: #1779ba transparent transparent;
+  border-color: black transparent transparent;
   position: absolute;
   top: 50%;
   margin-top: -3px;

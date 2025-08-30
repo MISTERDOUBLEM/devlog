@@ -1,0 +1,200 @@
+CODEBLOCK
+{
+import time
+from random import random, shuffle
+
+''' 0.1.2.3.4.5.6.7.8
+0.  ████████████████████████████████████████
+1.  ██MM██XX████████████████████████████████
+2.  ████████████████████████████████████████
+3.  ██XX████████████████████████████████████
+4.  ████████████████████████████████████████
+5.  ████████████████████████████████████████
+6.  ████████████████████████████████████████
+7.  ████████████████████████████████████████
+8.  ████████████████████████████████████████
+    ████████████████████████████████████████
+    ████████████████████████████████████████
+    ████████████████████████████████████████
+    ████████████████████████████████████████
+    ████████████████████████████████████████
+    ████████████████████████████████████████
+    ████████████████████████████████████████
+    ████████████████████████████████████████
+    ████████████████████████████████████████
+    ████████████████████████████████████████
+    ████████████████████████████████████████
+'''
+
+def generate_maze(width, height):
+	#maze initialization
+	maze = []
+	for i in range(height):
+		maze.append(['X'] * width)
+
+	#jumpable directions
+	dirs = [(0,2), (2,0), (0,-2), (-2,0)]
+
+	#mole list
+	maze[5][21] = 'O'
+	mole_list = [(5,21)]
+
+	for i in range(300):
+
+		new_mole_list = []
+
+		for mole in mole_list:
+			#scanning
+			jumpable = []
+			for dirc in dirs:
+				if mole[0] + dirc[0] < 0 or mole[0] + dirc[0] >= height:
+					continue
+				if mole[1] + dirc[1] < 0 or mole[1] + dirc[1] >= width:
+					continue
+				if maze[mole[0] + dirc[0]][mole[1] + dirc[1]] == 'X':
+					jumpable.append(dirc)
+
+			#scramble jumpable
+			shuffle(jumpable)
+
+			#to jump or not to jump
+			for dirc in jumpable:
+				if random() < 0.4:
+					maze[mole[0] + int(0.5*dirc[0])][mole[1] + int(0.5*dirc[1])] = 'O'
+					maze[mole[0] + dirc[0]][mole[1] + dirc[1]] = 'M'
+					new_mole_list.append((mole[0] + dirc[0], mole[1] + dirc[1]))
+
+			kill_mole = len(jumpable) == 0
+			if not kill_mole:
+				new_mole_list.append(mole)
+			else:
+				maze[mole[0]][mole[1]] = 'O'
+
+			pretty_print(maze)
+			print('\n')
+			time.sleep(0.005)
+
+		mole_list = new_mole_list
+
+	return maze
+
+def pretty_print(maze):
+	for row in maze:
+		s = ''
+		for i in row:
+			if i == 'X':
+				s += '\033[107m' + '  ' + '\033[0m'
+			elif i == 'M':
+				s += '\033[101m' + '  ' + '\033[0m'
+			elif i == 'N':
+				s += '\033[102m' + '  ' + '\033[0m'
+			elif i == '.':
+				s += '\033[45m' + '  ' + '\033[0m' 
+			elif i != str(i):
+				if i < 10:
+					s += ' ' + str(i)
+				else:
+					s += str(i)
+			else:
+				s += '  '
+		print(s)
+	print()
+
+def find_longest_route(maze):
+	maze_copy = []
+	for row in maze:
+		maze_copy.append(row.copy())
+
+	maze_copy[1][1] = 0
+	burning = [(1,1)]
+	dirs = [(0,1), (1,0), (0,-1), (-1,0)]
+
+	new_burning = []
+	final_dead_end = (1,1)
+	while len(burning) > 0:
+		time.sleep(0.05)
+		pretty_print(maze_copy)
+		for flame in burning:
+			burned = False
+			#scanning 4 directions to see which one is available
+			for dirc in dirs:
+				if maze_copy[flame[0] + dirc[0]][flame[1] + dirc[1]] == "O":
+					burned = True
+					maze_copy[flame[0] + dirc[0]][flame[1] + dirc[1]] = maze_copy[flame[0]][flame[1]] + 1
+					new_burning.append((flame[0] + dirc[0], flame[1] + dirc[1]))
+			if not burned:
+				final_dead_end = (flame[0], flame[1])
+		burning = new_burning
+		new_burning = []
+	return final_dead_end
+
+def avogadro(maze):
+	def avogadro_helper(maze, row, col):
+		if maze[row][col] == 'X':
+			return False
+		if maze[row][col] == '.':
+			return False
+		if maze[row][col] == 'N':
+			return True
+		if maze[row][col] == 'O':
+			time.sleep(0.07)
+			pretty_print(maze)
+			maze[row][col] = '.'
+			return avogadro_helper(maze, row + 1, col) or avogadro_helper(maze, row - 1, col) or avogadro_helper(maze, row, col + 1) or avogadro_helper(maze, row, col - 1)
+
+	avogadro_helper(maze,1,1)
+
+maze = generate_maze(31,31)
+
+end = find_longest_route(maze)
+maze[end[0]][end[1]] = 'N'
+avogadro(maze)
+'''
+(28, 29)
+██████████████████████████████████████████████████████████████
+██..                                                        ██
+██..██████  ██  ██  ██████  ██████  ██  ██  ██  ██████████████
+██......██  ██  ██      ██      ██  ██  ██  ██              ██
+██XX██..██████████  ██  ██  ██████  ██████████  ██  ██  ██████
+██XX██Av        ██  ██  ██      ██      ██  ██  ██  ██  ██  ██
+██████  ██  ██  ██████████  ██  ██  ██  ██  ██████████████  ██
+██      ██  ██          ██  ██  ██  ██                      ██
+██████████  ██  ██  ██████████  ██  ██  ██████  ██████  ██████
+██          ██  ██          ██  ██  ██      ██  ██          ██
+██████  ██████  ██████████████  ██████  ██  ██  ██████████████
+██          ██              ██  ██  ██  ██  ██              ██
+██  ██  ██  ██  ██████  ██████  ██  ██████████  ██  ██  ██████
+██  ██  ██  ██      ██      ██              ██  ██  ██      ██
+██  ██  ██████  ██  ██  ██  ██  ██  ██  ██████  ██  ██████  ██
+██  ██  ██  ██  ██  ██  ██  ██  ██  ██      ██  ██      ██  ██
+██████  ██  ██  ██████  ██████████████████████████████  ██  ██
+██          ██  ██                                  ██  ██  ██
+██████  ██████████████  ██████  ██  ██████████████████████  ██
+██                  ██      ██  ██                      ██  ██
+██████  ██  ██  ██  ██  ██████████  ██  ██████  ██████████████
+██      ██  ██  ██  ██          ██  ██      ██              ██
+██  ██████  ██  ██  ██████  ██████████████████████████  ██  ██
+██  ██      ██  ██  ██                              ██  ██  ██
+██  ██████  ██  ██  ██████  ██  ██  ██  ██████  ██  ██  ██████
+██  ██      ██  ██      ██  ██  ██  ██      ██  ██  ██      ██
+██████████  ██  ██████████  ██  ██████████  ██  ██  ██████  ██
+██          ██          ██  ██          ██  ██  ██      ██  ██
+██████  ██  ██  ██  ██  ██  ██  ██████████████████████████████
+██      ██  ██  ██  ██  ██  ██                            Ed██
+██████████████████████████████████████████████████████████████
+'''
+
+
+#time.sleep(2)
+#print('\033c')
+}
+H2
+{
+	This project was inspired by my '''personal struggles with solving mazes- I figured that if I found them difficult, perhaps a program could do it for me. As a child, I often tried to complete mazes on kids’ menus at restaurants'''
+
+	#CHANGE to curious and blah blah blah
+
+	, and with my current programming skills, I wanted to explore how I might build a program that could solve them automatically. I created a program that can both generate and solve mazes using a system of randomly moving “moles” to simulate the maze, I used a 2D array, which made sense because most mazes are two-dimensional, and positions within the maze can be easily represented using coordinates in a row and column format. The maze consists of two types of blocks:walls and empty spaces. I generated the maze through the controlled, random movement of “moles”. Once the maze was generated, I used a similar concept to create a solver using different travelers called “Avogadros.” As I wanted to challenge myself creating this maze gen I refrained myself from researching existing algorithm. Through this process, I successfully built a maze gen and solver from 2D arrays and controlled randomized movement of moles and Avagadros.	
+
+}
+END
