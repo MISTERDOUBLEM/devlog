@@ -32,6 +32,12 @@ def generate_maze(width, height):
 	for i in range(height):
 		maze.append(['X'] * width)
 
+
+P
+{
+First, I created a 2D array to create the maze. Afterwards, I filled the array with X's which will later be carved out into pathways by moles.
+}
+
 	#jumpable directions
 	dirs = [(0,2), (2,0), (0,-2), (-2,0)]
 
@@ -195,6 +201,5 @@ H2
 	#CHANGE to curious and blah blah blah
 
 	, and with my current programming skills, I wanted to explore how I might build a program that could solve them automatically. I created a program that can both generate and solve mazes using a system of randomly moving “moles” to simulate the maze, I used a 2D array, which made sense because most mazes are two-dimensional, and positions within the maze can be easily represented using coordinates in a row and column format. The maze consists of two types of blocks:walls and empty spaces. I generated the maze through the controlled, random movement of “moles”. Once the maze was generated, I used a similar concept to create a solver using different travelers called “Avogadros.” As I wanted to challenge myself creating this maze gen I refrained myself from researching existing algorithm. Through this process, I successfully built a maze gen and solver from 2D arrays and controlled randomized movement of moles and Avagadros.	
-
 }
 END
